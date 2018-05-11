@@ -26,10 +26,15 @@ SOFTWARE.
 
 package com.queuedpixel.qorcraft;
 
-public class Main
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+
+public class QorcraftCommand implements CommandExecutor
 {
-    public static void main( String[] args )
+    public boolean onCommand( CommandSender sender, Command command, String label, String[] args )
     {
-        System.out.println( "Hello world!" );
+        sender.sendMessage( "Hello, world!" );
+        return true;
     }
 }
