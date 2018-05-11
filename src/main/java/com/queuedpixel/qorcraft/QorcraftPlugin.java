@@ -27,15 +27,52 @@ SOFTWARE.
 package com.queuedpixel.qorcraft;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.dynmap.DynmapCommonAPI;
+import org.dynmap.markers.AreaMarker;
+import org.dynmap.markers.MarkerAPI;
+import org.dynmap.markers.MarkerIcon;
+import org.dynmap.markers.MarkerSet;
+import org.dynmap.markers.PolyLineMarker;
 
 public class QorcraftPlugin extends JavaPlugin
 {
     public void onEnable()
     {
         this.getCommand( "qorcraft" ).setExecutor( new QorcraftCommand() );
+
+        DynmapCommonAPI dynMapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );
+        MarkerAPI markerApi = dynMapApi.getMarkerAPI();
+        MarkerIcon icon = markerApi.getMarkerIcon( MarkerIcon.DEFAULT );
+        MarkerSet markerSet = markerApi.createMarkerSet( "qorcraft", "Qorcraft", null, false );
+        markerSet.setLayerPriority( 10 );
+        markerSet.createMarker( "qorcraft-marker-1", "Qorcraft Marker 1", "world", -56, 64, -14, icon, false );
+        markerSet.createMarker( "qorcraft-marker-2", "Qorcraft Marker 2", "world",  10, 64, -67, icon, false );
+        markerSet.createMarker( "qorcraft-marker-3", "Qorcraft Marker 3", "world",  47, 64,  14, icon, false );
+        markerSet.createMarker( "qorcraft-marker-4", "Qorcraft Marker 4", "world", -34, 64,   6, icon, false );
+        this.createLine(
+                markerSet, "qorcraft-line-1", "Qorcraft Line 1", false, "world", -56, 64, -14, -34, 64, 6 );
+        this.createArea(
+                markerSet, "qorcraft-area-1", "Qorcraft Area 1", false, "world", -56, -14, 10, -67, 47, 14 );
     }
 
     public void onDisable()
     {
+    }
+
+    private void createLine( MarkerSet markerSet, String id, String label, boolean markup, String world,
+                             double x1, double y1, double z1, double x2, double y2, double z2 )
+    {
+        PolyLineMarker line = markerSet.createPolyLineMarker( id, label, markup, world,
+                new double[] { x1, x2 }, new double[] { y1, y2 }, new double[] { z1, z2 }, false );
+        line.setLineStyle( 3, 0.75, 0xFF00FF );
+    }
+
+    private void createArea( MarkerSet markerSet, String id, String label, boolean markup, String world,
+                             double x1, double z1, double x2, double z2, double x3, double z3 )
+    {
+        AreaMarker area = markerSet.createAreaMarker( id, label, markup, world,
+                new double[] { x1, x2, x3 }, new double[] { z1, z2, z3 }, false );
+        area.setLineStyle( 3, 0.75, 0xFF00FF );
+        area.setFillStyle( 0.25, 0xFF00FF );
     }
 }

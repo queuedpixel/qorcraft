@@ -23,6 +23,8 @@
 name: Qorcraft
 version: 1.0.0-SNAPSHOT
 main: com.queuedpixel.qorcraft.QorcraftPlugin
+depend:
+    - dynmap
 commands:
     qorcraft:
         description: Qorcraft test command.
