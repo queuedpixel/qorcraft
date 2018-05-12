@@ -26,15 +26,33 @@ SOFTWARE.
 
 package com.queuedpixel.qorcraft;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class QorcraftCommand implements CommandExecutor
 {
+    @SuppressWarnings( "deprecation" )
     public boolean onCommand( CommandSender sender, Command command, String label, String[] args )
     {
-        sender.sendMessage( "Hello, world!" );
+        if ( sender instanceof Player )
+        {
+            Player player = (Player) sender;
+            Block block = player.getTargetBlock( null, 100 );
+
+            if ( block.getType() != Material.AIR )
+            {
+                player.sendBlockChange( block.getLocation(), Material.WOOL, (byte) 2 );
+            }
+        }
+        else
+        {
+            sender.sendMessage( "You are not a player." );
+        }
+
         return true;
     }
 }
