@@ -26,6 +26,7 @@ SOFTWARE.
 
 package com.queuedpixel.qorcraft;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -45,7 +46,7 @@ public class QorcraftCommand implements CommandExecutor
 
             if ( block.getType() != Material.AIR )
             {
-                player.sendBlockChange( block.getLocation(), Material.WOOL, (byte) 2 );
+                player.sendMessage( "Block: " + block.getType().toString() );
             }
         }
         else
