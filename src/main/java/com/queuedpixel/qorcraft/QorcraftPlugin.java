@@ -40,6 +40,10 @@ public class QorcraftPlugin extends JavaPlugin
     {
         this.getCommand( "qorcraft" ).setExecutor( new QorcraftCommand() );
 
+        BlockMarker blockMarker = new BlockMarker();
+        this.getServer().getPluginManager().registerEvents( blockMarker, this );
+        blockMarker.runTaskTimer( this, 5, 5 );
+
         DynmapCommonAPI dynMapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );
         MarkerAPI markerApi = dynMapApi.getMarkerAPI();
         MarkerIcon icon = markerApi.getMarkerIcon( MarkerIcon.DEFAULT );
