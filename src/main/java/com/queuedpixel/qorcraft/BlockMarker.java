@@ -148,7 +148,26 @@ public class BlockMarker extends BukkitRunnable implements Listener
     public void onPlayerMoveEvent( PlayerMoveEvent event )
     {
         // update the block animation for the player
-        this.updateBlock( event.getPlayer().getUniqueId() );
+        UUID playerId = event.getPlayer().getUniqueId();
+        if ( this.playerBlockMap.containsKey( playerId )) this.updateBlock( playerId );
+    }
+
+    public void addPlayer( Player player )
+    {
+        UUID playerId = player.getUniqueId();
+        this.playerBlockMap.put( playerId, null );
+        this.updateBlock( playerId );
+    }
+
+    public void removePlayer( Player player )
+    {
+        UUID playerId = player.getUniqueId();
+
+        if ( this.playerBlockMap.containsKey( playerId ))
+        {
+            this.restoreBlock( player );
+            this.playerBlockMap.remove( playerId );
+        }
     }
 
     @SuppressWarnings( "deprecation" )
@@ -163,13 +182,7 @@ public class BlockMarker extends BukkitRunnable implements Listener
             return;
         }
 
-        if ( this.playerBlockMap.containsKey( playerId ))
-        {
-            // return the old block to its original status
-            Block oldBlock = this.playerBlockMap.get( playerId );
-            player.sendBlockChange( oldBlock.getLocation(), oldBlock.getType(), oldBlock.getData() );
-        }
-
+        this.restoreBlock( player );
         Block block = player.getTargetBlock( this.ignoredMaterials, 100 );
         if ( block.getType() != Material.AIR )
         {
@@ -191,7 +204,18 @@ public class BlockMarker extends BukkitRunnable implements Listener
         }
         else
         {
-            this.playerBlockMap.remove( playerId );
+            this.playerBlockMap.put( playerId, null );
+        }
+    }
+
+    @SuppressWarnings( "deprecation" )
+    private void restoreBlock( Player player )
+    {
+        Block oldBlock = this.playerBlockMap.get( player.getUniqueId() );
+        if ( oldBlock != null )
+        {
+            // return the old block to its original status
+            player.sendBlockChange( oldBlock.getLocation(), oldBlock.getType(), oldBlock.getData() );
         }
     }
 }

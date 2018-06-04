@@ -38,10 +38,16 @@ public class QorcraftPlugin extends JavaPlugin
 {
     public void onEnable()
     {
-        this.getCommand( "qorcraft" ).setExecutor( new QorcraftCommand() );
-
         BlockMarker blockMarker = new BlockMarker();
+        QorcraftCommand qorcraftCommand = new QorcraftCommand();
+        QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand( blockMarker );
+
         this.getServer().getPluginManager().registerEvents( blockMarker, this );
+        this.getServer().getPluginManager().registerEvents( qorcraftAdminCommand, this );
+
+        this.getCommand( "qorcraft" ).setExecutor( qorcraftCommand );
+        this.getCommand( "qorcraftadmin" ).setExecutor( qorcraftAdminCommand );
+
         blockMarker.runTaskTimer( this, 5, 5 );
 
         DynmapCommonAPI dynMapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );

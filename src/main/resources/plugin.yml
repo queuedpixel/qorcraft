@@ -29,3 +29,10 @@ commands:
     qorcraft:
         description: Qorcraft test command.
         usage: /qorcraft
+    qorcraftadmin:
+        description: Administrative command for Qorcraft.
+        usage: /qorcraftadmin
+permissions:
+    qorcraft.admin:
+        description: Grants permission to administer Qorcraft.
+        default: op
