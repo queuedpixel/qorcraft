@@ -40,14 +40,20 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecutor, Listener
 {
-    // map of player to the current block they are looking at
-    private Map< UUID, Block > playerBlockMap = new HashMap<>();
+    // map of players to the current block they are looking at
+    private final Map< UUID, Block > playerBlockMap = new HashMap<>();
+
+    // map of players to the time they started a timed command
+    private final Map< UUID, Long > playerTimeMap = new HashMap<>();
 
     // step descriptions:
     //    - 0 : unchanged
@@ -83,8 +89,8 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
         if ( subCommand.equals( "create" ))
         {
             sender.sendMessage( ChatColor.AQUA + "Creating new Qorway." );
-            sender.sendMessage( ChatColor.LIGHT_PURPLE + "Click on a block to create a Qorway." );
-            this.addPlayer( player );
+            sender.sendMessage( ChatColor.LIGHT_PURPLE + "Click on a block within 15 seconds to create a Qorway." );
+            this.addPlayer( player.getUniqueId() );
             return true;
         }
         else
@@ -100,10 +106,37 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
         this.stepCount++;
         if ( this.stepCount >= 4 ) this.stepCount = 0;
 
+        long now = new Date().getTime();
+        Set< UUID > expiredPlayers = new HashSet<>();
+
         // update the block animation for each player
         for ( UUID playerId : this.playerBlockMap.keySet() )
         {
-            this.updateBlock( playerId );
+            // check if player has logged out
+            Player player = Bukkit.getPlayer( playerId );
+            if ( player == null )
+            {
+                expiredPlayers.add( playerId );
+            }
+            else
+            {
+                // check if 15 seconds has elapsed since player called command
+                if ( this.playerTimeMap.get( playerId ) + 15000 <= now )
+                {
+                    player.sendMessage( ChatColor.RED + "Qorway creation timed out." );
+                    expiredPlayers.add( playerId );
+                }
+                else
+                {
+                    this.updateBlock( playerId );
+                }
+            }
+        }
+
+        // remove players who have had their timer expire or have logged out
+        for ( UUID playerId : expiredPlayers )
+        {
+            this.removePlayer( playerId );
         }
     }
 
@@ -118,7 +151,7 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
     @EventHandler
     public void onPlayerInteractEvent( PlayerInteractEvent event )
     {
-        this.removePlayer( event.getPlayer() );
+        this.removePlayer( event.getPlayer().getUniqueId() );
     }
 
     private void sendUsage( CommandSender sender )
@@ -126,37 +159,31 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
         sender.sendMessage( ChatColor.GREEN + "Available sub-commands: " + ChatColor.LIGHT_PURPLE + "create" );
     }
 
-    private void addPlayer( Player player )
+    private void addPlayer( UUID playerId )
     {
-        UUID playerId = player.getUniqueId();
         this.playerBlockMap.put( playerId, null );
         this.updateBlock( playerId );
+        this.playerTimeMap.put( playerId, new Date().getTime() );
     }
 
-    private void removePlayer( Player player )
+    private void removePlayer( UUID playerId )
     {
-        UUID playerId = player.getUniqueId();
-
         if ( this.playerBlockMap.containsKey( playerId ))
         {
-            this.restoreBlock( player );
+            this.restoreBlock( playerId );
             this.playerBlockMap.remove( playerId );
         }
+
+        if ( this.playerTimeMap.containsKey( playerId )) this.playerTimeMap.remove( playerId );
     }
 
     @SuppressWarnings( "deprecation" )
     private void updateBlock( UUID playerId )
     {
         Player player = Bukkit.getPlayer( playerId );
+        if ( player == null ) return;
 
-        // check to see if the player has logged out
-        if ( player == null )
-        {
-            this.playerBlockMap.remove( playerId );
-            return;
-        }
-
-        this.restoreBlock( player );
+        this.restoreBlock( playerId );
         Block block = player.getTargetBlock( IgnoredMaterials.getMaterials(), 100 );
         if ( block.getType() != Material.AIR )
         {
@@ -183,8 +210,11 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
     }
 
     @SuppressWarnings( "deprecation" )
-    private void restoreBlock( Player player )
+    private void restoreBlock( UUID playerId )
     {
+        Player player = Bukkit.getPlayer( playerId );
+        if ( player == null ) return;
+
         Block oldBlock = this.playerBlockMap.get( player.getUniqueId() );
         if ( oldBlock != null )
         {
