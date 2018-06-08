@@ -49,6 +49,8 @@ import java.util.UUID;
 
 public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecutor, Listener
 {
+    private final QorcraftMap qorcraftMap;
+
     // map of players to the current block they are looking at
     private final Map< UUID, Block > playerBlockMap = new HashMap<>();
 
@@ -61,6 +63,11 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
     //    - 2 : unchanged
     //    - 3 : bedrock
     private int stepCount = 0;
+
+    public QorcraftAdminCommand( QorcraftMap qorcraftMap )
+    {
+        this.qorcraftMap = qorcraftMap;
+    }
 
     public boolean onCommand( CommandSender sender, Command command, String label, String[] args )
     {
@@ -151,7 +158,13 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
     @EventHandler
     public void onPlayerInteractEvent( PlayerInteractEvent event )
     {
-        this.removePlayer( event.getPlayer().getUniqueId() );
+        UUID playerId = event.getPlayer().getUniqueId();
+        if ( this.playerBlockMap.containsKey( playerId ))
+        {
+            this.removePlayer( event.getPlayer().getUniqueId() );
+            Block block = event.getPlayer().getTargetBlock( IgnoredMaterials.getMaterials(), 100 );
+            this.qorcraftMap.addQorway( block.getWorld().getName(), block.getX(), block.getY(), block.getZ() );
+        }
     }
 
     private void sendUsage( CommandSender sender )

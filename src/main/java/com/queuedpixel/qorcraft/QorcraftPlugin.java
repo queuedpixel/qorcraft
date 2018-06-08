@@ -38,8 +38,11 @@ public class QorcraftPlugin extends JavaPlugin
 {
     public void onEnable()
     {
+        DynmapCommonAPI dynmapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );
+        QorcraftMap qorcraftMap = new QorcraftMap( dynmapApi );
+
         QorcraftCommand qorcraftCommand = new QorcraftCommand();
-        QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand();
+        QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand( qorcraftMap );
 
         this.getServer().getPluginManager().registerEvents( qorcraftAdminCommand, this );
 
@@ -48,10 +51,9 @@ public class QorcraftPlugin extends JavaPlugin
 
         qorcraftAdminCommand.runTaskTimer( this, 5, 5 );
 
-        DynmapCommonAPI dynMapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );
-        MarkerAPI markerApi = dynMapApi.getMarkerAPI();
+        MarkerAPI markerApi = dynmapApi.getMarkerAPI();
         MarkerIcon icon = markerApi.getMarkerIcon( MarkerIcon.DEFAULT );
-        MarkerSet markerSet = markerApi.createMarkerSet( "qorcraft", "Qorcraft Test", null, false );
+        MarkerSet markerSet = markerApi.createMarkerSet( "qorcraft-test", "Qorcraft Test", null, false );
         markerSet.setLayerPriority( 5 );
         markerSet.createMarker( "qorcraft-marker-1", "Qorcraft Marker 1", "world", -56, 64, -14, icon, false );
         markerSet.createMarker( "qorcraft-marker-2", "Qorcraft Marker 2", "world",  10, 64, -67, icon, false );
