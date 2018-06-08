@@ -121,7 +121,7 @@ public class BlockMarker extends BukkitRunnable implements Listener
                     break;
             }
 
-            Bukkit.getServer().getPlayer( playerId ).sendBlockChange( block.getLocation(), material, data );
+            player.sendBlockChange( block.getLocation(), material, data );
         }
         else
         {
