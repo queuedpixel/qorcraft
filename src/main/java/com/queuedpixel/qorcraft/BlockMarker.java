@@ -43,9 +43,6 @@ import java.util.UUID;
 
 public class BlockMarker extends BukkitRunnable implements Listener
 {
-    // set of ignored materials
-    Set< Material > ignoredMaterials = new HashSet<>();
-
     // map of player to the current block they are looking at
     private Map< UUID, Block > playerBlockMap = new HashMap<>();
 
@@ -55,82 +52,6 @@ public class BlockMarker extends BukkitRunnable implements Listener
     //    - 2 : unchanged
     //    - 3 : bedrock
     int stepCount = 0;
-
-    public BlockMarker()
-    {
-        // construct the set of ignored materials
-        this.ignoredMaterials.add( Material.ACACIA_DOOR             );
-        this.ignoredMaterials.add( Material.ACACIA_FENCE            );
-        this.ignoredMaterials.add( Material.ACACIA_FENCE_GATE       );
-        this.ignoredMaterials.add( Material.AIR                     );
-        this.ignoredMaterials.add( Material.BEETROOT_BLOCK          );
-        this.ignoredMaterials.add( Material.BIRCH_DOOR              );
-        this.ignoredMaterials.add( Material.BIRCH_FENCE             );
-        this.ignoredMaterials.add( Material.BIRCH_FENCE_GATE        );
-        this.ignoredMaterials.add( Material.BROWN_MUSHROOM          );
-        this.ignoredMaterials.add( Material.CARROT                  );
-        this.ignoredMaterials.add( Material.CROPS                   );
-        this.ignoredMaterials.add( Material.DARK_OAK_DOOR           );
-        this.ignoredMaterials.add( Material.DARK_OAK_FENCE          );
-        this.ignoredMaterials.add( Material.DARK_OAK_FENCE_GATE     );
-        this.ignoredMaterials.add( Material.DEAD_BUSH               );
-        this.ignoredMaterials.add( Material.DIODE_BLOCK_OFF         );
-        this.ignoredMaterials.add( Material.DIODE_BLOCK_ON          );
-        this.ignoredMaterials.add( Material.ENDER_PORTAL            );
-        this.ignoredMaterials.add( Material.FENCE                   );
-        this.ignoredMaterials.add( Material.FENCE_GATE              );
-        this.ignoredMaterials.add( Material.GLASS                   );
-        this.ignoredMaterials.add( Material.GOLD_PLATE              );
-        this.ignoredMaterials.add( Material.IRON_DOOR_BLOCK         );
-        this.ignoredMaterials.add( Material.IRON_FENCE              );
-        this.ignoredMaterials.add( Material.IRON_PLATE              );
-        this.ignoredMaterials.add( Material.IRON_TRAPDOOR           );
-        this.ignoredMaterials.add( Material.JUNGLE_DOOR             );
-        this.ignoredMaterials.add( Material.JUNGLE_FENCE            );
-        this.ignoredMaterials.add( Material.JUNGLE_FENCE_GATE       );
-        this.ignoredMaterials.add( Material.LADDER                  );
-        this.ignoredMaterials.add( Material.LEVER                   );
-        this.ignoredMaterials.add( Material.LONG_GRASS              );
-        this.ignoredMaterials.add( Material.MELON_STEM              );
-        this.ignoredMaterials.add( Material.NETHER_FENCE            );
-        this.ignoredMaterials.add( Material.NETHER_WARTS            );
-        this.ignoredMaterials.add( Material.PORTAL                  );
-        this.ignoredMaterials.add( Material.POTATO                  );
-        this.ignoredMaterials.add( Material.PUMPKIN_STEM            );
-        this.ignoredMaterials.add( Material.RED_MUSHROOM            );
-        this.ignoredMaterials.add( Material.RED_ROSE                );
-        this.ignoredMaterials.add( Material.REDSTONE_COMPARATOR     );
-        this.ignoredMaterials.add( Material.REDSTONE_COMPARATOR_OFF );
-        this.ignoredMaterials.add( Material.REDSTONE_COMPARATOR_ON  );
-        this.ignoredMaterials.add( Material.REDSTONE_LAMP_OFF       );
-        this.ignoredMaterials.add( Material.REDSTONE_LAMP_ON        );
-        this.ignoredMaterials.add( Material.REDSTONE_TORCH_OFF      );
-        this.ignoredMaterials.add( Material.REDSTONE_TORCH_ON       );
-        this.ignoredMaterials.add( Material.REDSTONE_WIRE           );
-        this.ignoredMaterials.add( Material.SIGN_POST               );
-        this.ignoredMaterials.add( Material.SKULL                   );
-        this.ignoredMaterials.add( Material.SPRUCE_DOOR             );
-        this.ignoredMaterials.add( Material.SPRUCE_FENCE            );
-        this.ignoredMaterials.add( Material.SPRUCE_FENCE_GATE       );
-        this.ignoredMaterials.add( Material.STAINED_GLASS           );
-        this.ignoredMaterials.add( Material.STAINED_GLASS_PANE      );
-        this.ignoredMaterials.add( Material.STANDING_BANNER         );
-        this.ignoredMaterials.add( Material.STATIONARY_WATER        );
-        this.ignoredMaterials.add( Material.STONE_BUTTON            );
-        this.ignoredMaterials.add( Material.STONE_PLATE             );
-        this.ignoredMaterials.add( Material.SUGAR_CANE_BLOCK        );
-        this.ignoredMaterials.add( Material.THIN_GLASS              );
-        this.ignoredMaterials.add( Material.TORCH                   );
-        this.ignoredMaterials.add( Material.TRAP_DOOR               );
-        this.ignoredMaterials.add( Material.VINE                    );
-        this.ignoredMaterials.add( Material.WALL_BANNER             );
-        this.ignoredMaterials.add( Material.WALL_SIGN               );
-        this.ignoredMaterials.add( Material.WOOD_BUTTON             );
-        this.ignoredMaterials.add( Material.WOOD_DOOR               );
-        this.ignoredMaterials.add( Material.WOODEN_DOOR             );
-        this.ignoredMaterials.add( Material.WOOD_PLATE              );
-        this.ignoredMaterials.add( Material.YELLOW_FLOWER           );
-    }
 
     public void run()
     {
@@ -183,7 +104,7 @@ public class BlockMarker extends BukkitRunnable implements Listener
         }
 
         this.restoreBlock( player );
-        Block block = player.getTargetBlock( this.ignoredMaterials, 100 );
+        Block block = player.getTargetBlock( IgnoredMaterials.getMaterials(), 100 );
         if ( block.getType() != Material.AIR )
         {
             this.playerBlockMap.put( playerId, block );
