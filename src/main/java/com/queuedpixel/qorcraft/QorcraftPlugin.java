@@ -26,6 +26,8 @@ SOFTWARE.
 
 package com.queuedpixel.qorcraft;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapCommonAPI;
 import org.dynmap.markers.AreaMarker;
@@ -34,12 +36,35 @@ import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 import org.dynmap.markers.PolyLineMarker;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
 public class QorcraftPlugin extends JavaPlugin
 {
+    private Path dataFile;
+    QorcraftData data;
+
     public void onEnable()
     {
+        Path pluginDirectory = this.getDataFolder().toPath();
+        this.dataFile = pluginDirectory.resolve( "qorcraft.json" );
+
+        try
+        {
+            if ( !Files.exists( pluginDirectory )) Files.createDirectory( pluginDirectory );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+
+        this.loadData();
         DynmapCommonAPI dynmapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );
-        QorcraftMap qorcraftMap = new QorcraftMap( dynmapApi );
+        QorcraftMap qorcraftMap = new QorcraftMap( this, dynmapApi );
 
         QorcraftCommand qorcraftCommand = new QorcraftCommand();
         QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand( qorcraftMap );
@@ -67,6 +92,47 @@ public class QorcraftPlugin extends JavaPlugin
 
     public void onDisable()
     {
+    }
+
+    void saveData()
+    {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        try
+        {
+            BufferedWriter writer = Files.newBufferedWriter(
+                    this.dataFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING );
+            writer.write( gson.toJson( this.data ));
+            writer.newLine();
+            writer.close();
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadData()
+    {
+        // initialize new data structure if the data file does not exist
+        if ( !Files.exists( this.dataFile ))
+        {
+            this.data = new QorcraftData();
+            return;
+        }
+
+        try
+        {
+            Gson gson = new Gson();
+            BufferedReader reader = Files.newBufferedReader( this.dataFile );
+            this.data = gson.fromJson( reader, QorcraftData.class );
+            reader.close();
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+            this.data = new QorcraftData();
+        }
     }
 
     private void createLine( MarkerSet markerSet, String id, String label, boolean markup, String world,

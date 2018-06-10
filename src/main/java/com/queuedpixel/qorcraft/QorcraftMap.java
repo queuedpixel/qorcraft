@@ -31,23 +31,39 @@ import org.dynmap.markers.MarkerAPI;
 import org.dynmap.markers.MarkerIcon;
 import org.dynmap.markers.MarkerSet;
 
+import java.util.UUID;
+
 public class QorcraftMap
 {
+    private final QorcraftPlugin qorcraftPlugin;
     private final MarkerSet markerSet;
     private final MarkerIcon qorwayIcon;
-    private int count = 0;
 
-    public QorcraftMap( DynmapCommonAPI dynmapApi )
+    QorcraftMap( QorcraftPlugin qorcraftPlugin, DynmapCommonAPI dynmapApi )
     {
+        this.qorcraftPlugin = qorcraftPlugin;
+
+        // initialize dynmap api
         MarkerAPI markerApi = dynmapApi.getMarkerAPI();
-        this.qorwayIcon = markerApi.getMarkerIcon( "star" );
         this.markerSet = markerApi.createMarkerSet( "qorcraft", "Qorcraft", null, false );
         this.markerSet.setLayerPriority( 10 );
+        this.qorwayIcon = markerApi.getMarkerIcon( "star" );
+
+        // create markers for existing Qorways
+        for ( Qorway qorway : this.qorcraftPlugin.data.qorways ) this.addQorwayMarker( qorway );
     }
 
-    public void addQorway( String world, double x, double y, double z )
+    void addQorway( String world, double x, double y, double z )
     {
-        String id = "qorway-" + count++;
-        this.markerSet.createMarker( id, null, world, x, y, z, this.qorwayIcon, false );
+        Qorway qorway = new Qorway( world, x, y, z );
+        this.addQorwayMarker( qorway );
+        this.qorcraftPlugin.data.qorways.add( qorway );
+        this.qorcraftPlugin.saveData();
+    }
+
+    private void addQorwayMarker( Qorway qorway )
+    {
+        this.markerSet.createMarker( qorway.id.toString(), "Qorway", qorway.world,
+                                     qorway.x, qorway.y, qorway.z, this.qorwayIcon, false );
     }
 }
