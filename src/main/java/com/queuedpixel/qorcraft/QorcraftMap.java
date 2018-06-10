@@ -48,6 +48,6 @@ public class QorcraftMap
     public void addQorway( String world, double x, double y, double z )
     {
         String id = "qorway-" + count++;
-        markerSet.createMarker( id, null, world, x, y, z, this.qorwayIcon, false );
+        this.markerSet.createMarker( id, null, world, x, y, z, this.qorwayIcon, false );
     }
 }
