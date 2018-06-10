@@ -31,17 +31,35 @@ import java.util.UUID;
 public class Qorway
 {
     final String world;
-    final double x;
-    final double y;
-    final double z;
+    final int x;
+    final int y;
+    final int z;
     final UUID id;
 
-    Qorway( String world, double x, double y, double z )
+    Qorway( String world, int x, int y, int z )
     {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
         this.id = UUID.randomUUID();
+    }
+
+    public boolean equals( Object obj )
+    {
+        if ( !( obj instanceof Qorway )) return false;
+        Qorway qorway = (Qorway) obj;
+        return ( this.world.equals( qorway.world )) &&
+               ( this.x == qorway.x ) &&
+               ( this.y == qorway.y ) &&
+               ( this.z == qorway.z );
+    }
+
+    public int hashCode()
+    {
+        int hashX = this.x & 0b1111111111;
+        int hashY = ( this.y & 0b1111111111 ) << 10;
+        int hashZ = ( this.z & 0b1111111111 ) << 20;
+        return this.world.hashCode() ^ hashX ^ hashY ^ hashZ;
     }
 }

@@ -49,6 +49,7 @@ import java.util.UUID;
 
 public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecutor, Listener
 {
+    private final QorcraftPlugin qorcraftPlugin;
     private final QorcraftMap qorcraftMap;
 
     // map of players to the current block they are looking at
@@ -64,8 +65,9 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
     //    - 3 : bedrock
     private int stepCount = 0;
 
-    public QorcraftAdminCommand( QorcraftMap qorcraftMap )
+    public QorcraftAdminCommand( QorcraftPlugin qorcraftPlugin, QorcraftMap qorcraftMap )
     {
+        this.qorcraftPlugin = qorcraftPlugin;
         this.qorcraftMap = qorcraftMap;
     }
 
@@ -163,8 +165,16 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
         {
             this.removePlayer( event.getPlayer().getUniqueId() );
             Block block = event.getPlayer().getTargetBlock( IgnoredMaterials.getMaterials(), 100 );
-            this.qorcraftMap.addQorway( block.getWorld().getName(), block.getX(), block.getY(), block.getZ() );
-            event.getPlayer().sendMessage( ChatColor.GREEN + "Qorway created." );
+            Qorway qorway = new Qorway( block.getWorld().getName(), block.getX(), block.getY(), block.getZ() );
+            if ( this.qorcraftPlugin.data.qorways.contains( qorway ))
+            {
+                event.getPlayer().sendMessage( ChatColor.RED + "Qorway already exists here." );
+            }
+            else
+            {
+                this.qorcraftMap.addQorway( qorway );
+                event.getPlayer().sendMessage( ChatColor.GREEN + "Qorway created." );
+            }
         }
     }
 

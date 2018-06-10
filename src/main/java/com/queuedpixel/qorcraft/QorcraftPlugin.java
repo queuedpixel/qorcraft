@@ -67,7 +67,7 @@ public class QorcraftPlugin extends JavaPlugin
         QorcraftMap qorcraftMap = new QorcraftMap( this, dynmapApi );
 
         QorcraftCommand qorcraftCommand = new QorcraftCommand();
-        QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand( qorcraftMap );
+        QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand( this, qorcraftMap );
 
         this.getServer().getPluginManager().registerEvents( qorcraftAdminCommand, this );
 

@@ -53,9 +53,8 @@ public class QorcraftMap
         for ( Qorway qorway : this.qorcraftPlugin.data.qorways ) this.addQorwayMarker( qorway );
     }
 
-    void addQorway( String world, double x, double y, double z )
+    void addQorway( Qorway qorway )
     {
-        Qorway qorway = new Qorway( world, x, y, z );
         this.addQorwayMarker( qorway );
         this.qorcraftPlugin.data.qorways.add( qorway );
         this.qorcraftPlugin.saveData();
