@@ -47,6 +47,7 @@ public class QorcraftPlugin extends JavaPlugin
 {
     private Path dataFile;
     QorcraftData data;
+    NearbyQorwayAnimation nearbyQorwayAnimation;
 
     public void onEnable()
     {
@@ -69,12 +70,15 @@ public class QorcraftPlugin extends JavaPlugin
         QorcraftCommand qorcraftCommand = new QorcraftCommand();
         QorcraftAdminCommand qorcraftAdminCommand = new QorcraftAdminCommand( this, qorcraftMap );
 
+        this.nearbyQorwayAnimation = new NearbyQorwayAnimation( this );
+
         this.getServer().getPluginManager().registerEvents( qorcraftAdminCommand, this );
 
         this.getCommand( "qorcraft" ).setExecutor( qorcraftCommand );
         this.getCommand( "qorcraftadmin" ).setExecutor( qorcraftAdminCommand );
 
         qorcraftAdminCommand.runTaskTimer( this, 5, 5 );
+        nearbyQorwayAnimation.runTaskTimer( this, 5, 5 );
 
         MarkerAPI markerApi = dynmapApi.getMarkerAPI();
         MarkerIcon icon = markerApi.getMarkerIcon( MarkerIcon.DEFAULT );

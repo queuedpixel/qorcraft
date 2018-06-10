@@ -188,6 +188,7 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
         this.playerBlockMap.put( playerId, null );
         this.updateBlock( playerId );
         this.playerTimeMap.put( playerId, new Date().getTime() );
+        this.qorcraftPlugin.nearbyQorwayAnimation.addPlayer( playerId );
     }
 
     private void removePlayer( UUID playerId )
@@ -199,6 +200,8 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
         }
 
         if ( this.playerTimeMap.containsKey( playerId )) this.playerTimeMap.remove( playerId );
+
+        this.qorcraftPlugin.nearbyQorwayAnimation.removePlayer( playerId );
     }
 
     @SuppressWarnings( "deprecation" )
