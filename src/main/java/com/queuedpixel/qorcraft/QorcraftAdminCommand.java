@@ -164,6 +164,7 @@ public class QorcraftAdminCommand extends BukkitRunnable implements CommandExecu
             this.removePlayer( event.getPlayer().getUniqueId() );
             Block block = event.getPlayer().getTargetBlock( IgnoredMaterials.getMaterials(), 100 );
             this.qorcraftMap.addQorway( block.getWorld().getName(), block.getX(), block.getY(), block.getZ() );
+            event.getPlayer().sendMessage( ChatColor.GREEN + "Qorway created." );
         }
     }
 
