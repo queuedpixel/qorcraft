@@ -47,6 +47,7 @@ public class QorcraftPlugin extends JavaPlugin
 {
     private Path dataFile;
     QorcraftData data;
+    QorwayManager qorwayManager;
     NearbyQorwayAnimation nearbyQorwayAnimation;
 
     public void onEnable()
@@ -64,6 +65,14 @@ public class QorcraftPlugin extends JavaPlugin
         }
 
         this.loadData();
+
+        // initialize Qorway manager and add all Qorways
+        this.qorwayManager = new QorwayManager();
+        for ( Qorway qorway : this.data.qorways )
+        {
+            this.qorwayManager.addQorway( qorway );
+        }
+
         DynmapCommonAPI dynmapApi = (DynmapCommonAPI) this.getServer().getPluginManager().getPlugin( "dynmap" );
         QorcraftMap qorcraftMap = new QorcraftMap( this, dynmapApi );
 

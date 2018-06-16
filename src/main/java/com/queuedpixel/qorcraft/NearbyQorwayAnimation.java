@@ -27,6 +27,7 @@ SOFTWARE.
 package com.queuedpixel.qorcraft;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -136,7 +137,9 @@ public class NearbyQorwayAnimation extends BukkitRunnable
         Player player = Bukkit.getPlayer( playerId );
         if ( player == null ) return blocks;
 
-        for ( Qorway qorway : this.qorcraftPlugin.data.qorways )
+        Location location = player.getLocation();
+        for ( Qorway qorway : this.qorcraftPlugin.qorwayManager.getNearby(
+                location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ() ))
         {
             if (( player.getLocation().getWorld().getName().equals( qorway.world )) &&
                 ( Math.abs( player.getLocation().getBlockX() - qorway.x ) < this.distance ) &&
